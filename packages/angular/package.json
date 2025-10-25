@@ -1,0 +1,17 @@
+{
+  "name": "@password2d/angular",
+  "version": "1.0.0",
+  "description": "Angular bindings for the 2D Password engine",
+  "author": "Password2D Team",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@angular/core": "^17.0.0",
+    "@angular/common": "^17.0.0",
+    "@password2d/core": "workspace:*"
+  }
+}
