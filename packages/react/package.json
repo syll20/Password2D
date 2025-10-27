@@ -1,22 +1,30 @@
 {
   "name": "@password2d/react",
   "version": "1.0.0",
-  "description": "React bindings for the Password2D engine",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.esm.js",
-  "types": "./dist/index.d.ts",
-  "author": "Password2D Team",
-  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "node_modules/@password2d/core"
+  ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts"
+    "build": "tsup",
+    "build:core": "npm --prefix ../core run build",
+    "prepack": "npm run build:core && npm run build && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
   },
-  "peerDependencies": {
+  "dependencies": {
+    "@password2d/core": "file:./node_modules/@password2d/core",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "@password2d/core": "workspace:*"
+    "react-dom": ">=18.0.0"
   },
+  "bundledDependencies": [
+    "@password2d/core"
+  ],
   "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.5.0"
+    "tsup": "^8.5.0",
+    "typescript": "^5.5.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
   }
 }
