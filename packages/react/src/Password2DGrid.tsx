@@ -158,13 +158,22 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
     focusCell(pos.row, pos.col);
   };
 
-  // If `engine.className` is an empty string or only whitespace we should
-  // fall back to the built-in default classes. Some callers may pass an
-  // empty string intentionally; treat that the same as `undefined`.
-  const baseClass =
-    engine.className && engine.className.toString().trim()
-      ? engine.className.toString().trim()
-      : `border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center ${engine.cellSize ?? "w-12 h-12"}`;
+  // Separate `cellSize` from `className` so callers can provide a custom
+  // `className` while still using a cell size (or vice-versa). The default
+  // base classes (structure & visual) are applied when `engine.className` is
+  // empty/whitespace; `cellSize` is always appended (defaulting to w-12 h-12).
+  const defaultBaseWithoutSize =
+    "border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center";
+
+  const providedBase = engine.className && engine.className.toString().trim()
+    ? engine.className.toString().trim()
+    : defaultBaseWithoutSize;
+
+  const sizeClass = engine.cellSize && engine.cellSize.toString().trim()
+    ? engine.cellSize.toString().trim()
+    : "w-12 h-12";
+
+  const baseClass = `${providedBase} ${sizeClass}`;
   // Like `baseClass`, treat empty/whitespace-only activeCellClassName as not
   // provided and fall back to the built-in default.
   const activeClass =
