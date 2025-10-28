@@ -158,10 +158,19 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
     focusCell(pos.row, pos.col);
   };
 
+  // If `engine.className` is an empty string or only whitespace we should
+  // fall back to the built-in default classes. Some callers may pass an
+  // empty string intentionally; treat that the same as `undefined`.
   const baseClass =
-    engine.className ||
-    `border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center ${engine.cellSize ?? "w-12 h-12"}`;
-  const activeClass = engine.activeCellClassName || "ring-cyan-500 border-cyan-500";
+    engine.className && engine.className.toString().trim()
+      ? engine.className.toString().trim()
+      : `border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center ${engine.cellSize ?? "w-12 h-12"}`;
+  // Like `baseClass`, treat empty/whitespace-only activeCellClassName as not
+  // provided and fall back to the built-in default.
+  const activeClass =
+    engine.activeCellClassName && engine.activeCellClassName.toString().trim()
+      ? engine.activeCellClassName.toString().trim()
+      : "ring-cyan-500 border-cyan-500";
 
   return (
     <div className="space-y-2">
