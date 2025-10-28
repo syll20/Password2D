@@ -17,6 +17,7 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
     Array.from({ length: engine.rows }, () => Array(engine.cols).fill(null))
   );
   const suppressInput = useRef(false);
+  const isComposing = useRef(false);
 
   const focusCell = (r: number, c: number) => {
     if (r < 0 || c < 0 || r >= engine.rows || c >= engine.cols) return;
@@ -51,14 +52,17 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
   const handleInput = (e: React.FormEvent<HTMLDivElement>, r: number, c: number) => {
     if (suppressInput.current) return;
     const el = e.currentTarget;
-    const typed = el.innerText || "";
+    const rawTyped = el.innerText || "";
 
-    // Ignore visual mask characters
-    if (typed.includes("•")) {
-      //requestAnimationFrame(syncVisuals);
-      // Slight delay: let the browser finish adding next key before resyncing visuals
+    // Strip visual mask characters (•) so we compute the actual typed characters.
+    // When masked, syncVisuals writes • chars into the div; the browser may
+    // include them in innerText which would otherwise prevent processing input.
+    const typed = rawTyped.replace(/•/g, "");
+
+    // If the raw typed contains mask dots, schedule a quick resync so visuals
+    // are consistent while we still process the real typed characters.
+    if (rawTyped.includes("•")) {
       setTimeout(syncVisuals, 30);
-      return;
     }
 
     const current = engine.grid[r][c] || "";
@@ -85,12 +89,35 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, r: number, c: number) => {
+    // Handle deletion
     if (e.key === "Backspace") {
       e.preventDefault();
       engine.deleteChar(r, c);
       onChange?.();
       requestAnimationFrame(syncVisuals);
       focusCell(r, c);
+      return;
+    }
+
+    // Printable characters: consume them and send directly to the engine.
+    // This avoids relying on the DOM's contentEditable text which can race
+    // with our visual masking and cause brief erasures.
+  // If IME composition is in progress, don't intercept printable keys —
+  // let compositionend/input handle the final characters.
+  if (isComposing.current) return;
+
+  const isPrintable = e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
+    if (isPrintable) {
+      e.preventDefault();
+      let pos = { row: r, col: c };
+      for (const ch of e.key) {
+        const next = engine.addChar(pos.row, pos.col, ch);
+        if (!next) break;
+        pos = next;
+      }
+      onChange?.();
+      requestAnimationFrame(syncVisuals);
+      focusCell(pos.row, pos.col);
       return;
     }
 
@@ -116,6 +143,21 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>, r: number, c: number) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text") || "";
+    if (!text) return;
+    let pos = { row: r, col: c };
+    for (const ch of text) {
+      const next = engine.addChar(pos.row, pos.col, ch);
+      if (!next) break;
+      pos = next;
+    }
+    onChange?.();
+    requestAnimationFrame(syncVisuals);
+    focusCell(pos.row, pos.col);
+  };
+
   const baseClass =
     engine.className ||
     `border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center ${engine.cellSize ?? "w-12 h-12"}`;
@@ -137,7 +179,10 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
                 tabIndex={0}
                 onFocus={() => setFocused({ row: r, col: c })}
                 onInput={(e) => handleInput(e, r, c)}
+                onCompositionStart={() => (isComposing.current = true)}
+                onCompositionEnd={() => (isComposing.current = false)}
                 onKeyDown={(e) => handleKeyDown(e, r, c)}
+                onPaste={(e) => handlePaste(e, r, c)}
                 className={`${baseClass} ${
                   focused?.row === r && focused?.col === c ? activeClass : ""
                 }`}
