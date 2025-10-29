@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "jest --passWithNoTests",
     "build:core": "npm --prefix ../core run build",
     "prepack": "npm run build:core && npm run build && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
   },
@@ -22,9 +23,20 @@
     "@password2d/core"
   ],
   "devDependencies": {
-    "tsup": "^8.5.0",
-    "typescript": "^5.5.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0"
-  }
+    "@types/react-dom": "^18.2.0",
+    "@types/testing-library__react": "^10.2.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "tsup": "^8.5.0",
+    "typescript": "^5.5.0"
+  },
+  "bundleDependencies": [
+    "@password2d/core"
+  ]
 }
