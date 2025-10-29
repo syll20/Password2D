@@ -7,6 +7,14 @@ export interface Password2DOptions {
   className?: string;
   activeCellClassName?: string;
   cellSize?: string;
+  // Optional customization for control buttons and their text/aria labels
+  showHideButtonClassName?: string;
+  resetButtonClassName?: string;
+  showText?: string;
+  hideText?: string;
+  resetText?: string;
+  showAriaLabel?: string;
+  hideAriaLabel?: string;
 }
 
 export interface CellPosition {
@@ -25,6 +33,13 @@ export class Password2DEngine {
   className?: string;
   activeCellClassName?: string;
   cellSize?: string;
+  showHideButtonClassName?: string;
+  resetButtonClassName?: string;
+  showText?: string;
+  hideText?: string;
+  resetText?: string;
+  showAriaLabel?: string;
+  hideAriaLabel?: string;
 
   constructor({
     rows = 2,
@@ -35,6 +50,13 @@ export class Password2DEngine {
     className,
     activeCellClassName,
     cellSize = "w-12 h-12",
+    showHideButtonClassName,
+    resetButtonClassName,
+    showText = "Show",
+    hideText = "Hide",
+    resetText = "Reset",
+    showAriaLabel = "Show password grid",
+    hideAriaLabel = "Hide password grid",
   }: Password2DOptions = {}) {
     this.rows = rows;
     this.cols = cols;
@@ -44,6 +66,13 @@ export class Password2DEngine {
     this.className = className;
     this.activeCellClassName = activeCellClassName;
     this.cellSize = cellSize;
+  this.showHideButtonClassName = showHideButtonClassName;
+  this.resetButtonClassName = resetButtonClassName;
+  this.showText = showText;
+  this.hideText = hideText;
+  this.resetText = resetText;
+  this.showAriaLabel = showAriaLabel;
+  this.hideAriaLabel = hideAriaLabel;
     this.grid = Array.from({ length: rows }, () => Array(cols).fill(""));
     this.cursor = { row: 0, col: 0 };
   }
@@ -119,6 +148,14 @@ addChar(row: number, col: number, char: string): CellPosition | null {
       masked: this.masked,
       className: this.className,
       activeCellClassName: this.activeCellClassName,
+      cellSize: this.cellSize,
+      showHideButtonClassName: this.showHideButtonClassName,
+      resetButtonClassName: this.resetButtonClassName,
+      showText: this.showText,
+      hideText: this.hideText,
+      resetText: this.resetText,
+      showAriaLabel: this.showAriaLabel,
+      hideAriaLabel: this.hideAriaLabel,
     });
     clone.grid = this.grid.map((r) => [...r]);
     clone.cursor = { ...this.cursor };

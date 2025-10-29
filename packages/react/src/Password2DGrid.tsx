@@ -220,10 +220,18 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
             onChange?.();
             requestAnimationFrame(syncVisuals);
           }}
-          aria-label={masked ? "Show password grid" : "Hide password grid"}
-          className="text-cyan-600 hover:underline"
+          aria-label={
+            masked
+              ? engine.showAriaLabel ?? engine.showText ?? "Show password grid"
+              : engine.hideAriaLabel ?? engine.hideText ?? "Hide password grid"
+          }
+          className={
+            engine.showHideButtonClassName && engine.showHideButtonClassName.toString().trim()
+              ? engine.showHideButtonClassName.toString().trim()
+              : "text-cyan-600 hover:underline"
+          }
         >
-          {masked ? "Show" : "Hide"}
+          {masked ? engine.showText ?? "Show" : engine.hideText ?? "Hide"}
         </button>
 
         <button
@@ -234,9 +242,13 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
             requestAnimationFrame(syncVisuals);
             focusCell(0, 0);
           }}
-          className="text-gray-600 hover:underline"
+          className={
+            engine.resetButtonClassName && engine.resetButtonClassName.toString().trim()
+              ? engine.resetButtonClassName.toString().trim()
+              : "text-gray-600 hover:underline"
+          }
         >
-          Reset
+          {engine.resetText ?? "Reset"}
         </button>
       </div>
     </div>
