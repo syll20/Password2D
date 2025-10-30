@@ -174,3 +174,70 @@ test('encoding respects coordinateMode yx', () => {
   // In yx mode, for row=0 col=1 we expect (0,1)
   expect(encoded).toContain('(0,1)q');
 });
+
+test('multi-row wrapping advances to next row after last column', () => {
+  // 2 rows x 3 cols, maxCharsPerCell=1 makes each key advance the cursor
+  render(<Harness rows={2} cols={3} maxCharsPerCell={1} masked={false} />);
+  const cells = screen.getAllByRole('textbox');
+  // last column in first row: row 0, col 2 -> index 2
+  const lastInFirstRow = cells[2];
+  fireEvent.focus(lastInFirstRow);
+
+  // Type a character into the last cell of row 0; with maxCharsPerCell=1
+  // the next cell should be row 1, col 0 (index 3)
+  fireEvent.keyDown(lastInFirstRow, { key: 'z' });
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // With coordinateMode default "xy" the encoded token for column=2,row=0 is (2,0)
+  expect(encoded).toContain('(2,0)z');
+  // Ensure focus moved to the first cell of next row
+  const active = document.activeElement as HTMLElement;
+  expect(active).toBe(cells[3]);
+});
+
+test('multi-row wrapping with maxCharsPerCell > 1 overflows into next row', () => {
+  // 2 rows x 2 cols, maxCharsPerCell=2. We'll focus the last col of row0
+  // (index 1), type 3 characters: first two fill that cell, third should
+  // overflow into row1 col0 (index 2).
+  render(<Harness rows={2} cols={2} maxCharsPerCell={2} masked={false} />);
+  const cells = screen.getAllByRole('textbox');
+  const lastInFirstRow = cells[1];
+  fireEvent.focus(lastInFirstRow);
+
+  // Type sequence 'a','b','c' sending to the active element each time
+  let current = lastInFirstRow as HTMLElement;
+  for (const k of ['a', 'b', 'c']) {
+    fireEvent.keyDown(current, { key: k });
+    current = document.activeElement as HTMLElement;
+  }
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // Overflowed character should appear in row1 col0 => (0,1)
+  expect(encoded).toContain('(0,1)c');
+  // Focus should have moved to that cell (index 2)
+  expect(document.activeElement).toBe(cells[2]);
+});
+
+test('typing beyond final cell clamps to last cell and discards extra input', () => {
+  // 1 row x 2 cols, maxCharsPerCell=2. Typing many chars should clamp at
+  // the last cell (col 1) and it should contain at most 2 chars.
+  render(<Harness rows={1} cols={2} maxCharsPerCell={2} masked={false} />);
+  const cells = screen.getAllByRole('textbox');
+  const first = cells[0];
+  fireEvent.focus(first);
+
+  // Type a sequence longer than total capacity (4 = 2 cells * 2 chars)
+  const keys = ['1', '2', '3', '4', '5'];
+  let current = first as HTMLElement;
+  for (const k of keys) {
+    fireEvent.keyDown(current, { key: k });
+    current = document.activeElement as HTMLElement;
+  }
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // First cell should have first 2 chars
+  expect(encoded).toContain('(0,0)12');
+  // Second (last) cell should have next 2 chars and not include the 5th
+  expect(encoded).toContain('(1,0)34');
+  expect(encoded).not.toContain('5');
+});
