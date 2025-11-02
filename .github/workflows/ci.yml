@@ -7,6 +7,44 @@ on:
     branches: [ main ]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install core dependencies
+        run: npm --prefix packages/core ci
+
+      - name: Build core
+        run: npm --prefix packages/core run build
+
+      - name: Install React package deps
+        run: npm --prefix packages/react ci
+
+      - name: Run React tests
+        run: npm --prefix packages/react test --if-present
+
+      - name: Install Vue package deps
+        run: npm --prefix packages/vue ci
+
+      - name: Run Vue tests
+        run: npm --prefix packages/vue test --if-present
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
   test-react:
     name: Test React package
     runs-on: ubuntu-latest
