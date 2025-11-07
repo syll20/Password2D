@@ -2,18 +2,29 @@
   "name": "@password2d/vue",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "node_modules/@password2d/core"
+  ],
   "scripts": {
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "build:core": "npm --prefix ../core run build",
+    "prepack": "rm -rf dist node_modules && npm install && npm run build:core && npm run build && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
   },
   "dependencies": {
-    "@password2d/core": "file:../core"
+    "@password2d/core": "file:./node_modules/@password2d/core",
+    "vue": ">=3.3.0"
   },
+  "bundledDependencies": [
+    "@password2d/core"
+  ],
   "devDependencies": {
     "vue": "^3.3.0",
     "@types/jest": "^29.5.0",
@@ -25,7 +36,8 @@
     "typescript": "^5.0.0",
     "vite": "^4.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
-    "vue-tsc": "^1.8.0"
+    "vue-tsc": "^1.8.0",
+    "vite-plugin-dts": "^3.7.0"
   }
   ,
   "pretest": "npm --prefix ../core run build",

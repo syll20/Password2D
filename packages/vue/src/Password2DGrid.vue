@@ -69,7 +69,7 @@ const props = defineProps<{
 const focused = ref<{ row: number; col: number } | null>(null)
 const isComposing = ref(false)
 const suppressInput = ref(false)
-const cellRefs = ref<HTMLDivElement[][]>([])
+const cellRefs = ref<(HTMLElement | null)[][]>([])
 
 const defaultBaseWithoutSize = 'border border-gray-400 rounded flex items-center justify-center text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500 select-none bg-white overflow-hidden text-center'
 
@@ -222,8 +222,8 @@ onMounted(() => {
   // no-op: refs are populated via setCellRef during render
 })
 
-function setCellRef(el: HTMLDivElement | null, r: number, c: number) {
+function setCellRef(el: any, r: number, c: number) {
   if (!cellRefs.value[r]) cellRefs.value[r] = []
-  cellRefs.value[r][c] = el
+  cellRefs.value[r][c] = el?.$el instanceof HTMLElement ? el.$el : (el instanceof HTMLElement ? el : null)
 }
 </script>

@@ -9,7 +9,7 @@
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "test": "vitest run"
   },
-  "author": "Password2D Team",
+  "author": "syll20",
   "license": "MIT",
   "repository": {
     "type": "git",

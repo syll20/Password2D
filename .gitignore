@@ -1,9 +1,11 @@
 DO-NOT-PUSH.md
+GEMINI.md
 examples/
 packages/react/node_modules/
-packages/react/demo/node_modules/
+packages/react/demo
 packages/core/node_modules/
 packages/core/dist/
 packages/react/dist/
 packages/vue/node_modules/
+packages/vue/demo
 *.tgz
