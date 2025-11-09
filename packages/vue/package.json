@@ -9,11 +9,11 @@
     "node_modules/@password2d/core"
   ],
   "scripts": {
-    "build": "vite build",
-    "test": "jest",
+    "build": "tsup",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "build:core": "npm --prefix ../core run build",
-    "prepack": "rm -rf dist node_modules && npm install && npm run build:core && npm run build && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
+    "prepack": "npm run build:core && npm run build && rm -rf node_modules/@password2d/core && mkdir -p node_modules/@password2d/core && cp ../core/package.json node_modules/@password2d/core/ && cp ../core/tsconfig.json node_modules/@password2d/core/ && cp -r ../core/dist node_modules/@password2d/core/ && cp -r ../core/src node_modules/@password2d/core/"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
@@ -37,9 +37,10 @@
     "vite": "^4.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "vue-tsc": "^1.8.0",
-    "vite-plugin-dts": "^3.7.0"
+    "vite-plugin-dts": "^3.7.0",
+    "tsup": "^8.5.0",
+    "unplugin-vue": "^5.0.0"
   }
   ,
-  "pretest": "npm --prefix ../core run build",
-  "prebuild": "npm --prefix ../core run build"
+  "pretest": "npm --prefix ../core run build"
 }
