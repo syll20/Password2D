@@ -2,8 +2,8 @@
   "name": "@password2d/core",
   "version": "1.0.0",
   "description": "Framework-agnostic 2D password logic engine shared across React, Vue, Angular and Vanilla JS implementations.",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.esm.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
