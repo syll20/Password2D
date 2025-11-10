@@ -1,24 +1,8 @@
 import { ref, defineComponent, h } from 'vue'
-import { Password2DEngine } from '@password2d/core'
+import { Password2DEngine, Password2DOptions } from '@password2d/core'
 import PasswordGrid from './Password2DGrid.vue'
 
-export interface Use2DPasswordOptions {
-  rows?: number
-  cols?: number
-  maxCharsPerCell?: number
-  className?: string
-  activeCellClassName?: string
-  cellSize?: string
-  showHideButtonClassName?: string
-  resetButtonClassName?: string
-  showText?: string
-  hideText?: string
-  showAriaLabel?: string
-  hideAriaLabel?: string
-  resetText?: string
-}
-
-export function use2DPassword(options: Use2DPasswordOptions = {}) {
+export function use2DPassword(options: Password2DOptions = {}) {
   const engine = new Password2DEngine(options)
 
   // encoded reflects the engine's flattened value
