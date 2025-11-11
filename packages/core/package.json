@@ -9,6 +9,9 @@
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "test": "vitest run"
   },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "author": "syll20",
   "license": "MIT",
   "repository": {
