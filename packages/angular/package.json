@@ -18,20 +18,23 @@
     "prepack": "npm run build:core && npm run build && rm -rf node_modules/@password2d/core && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
   },
   "dependencies": {
-    "@angular/core": "^17.0.0",
-    "@angular/common": "^17.0.0",
+    "@angular/core": "^20.3.0",
+    "@angular/common": "^20.3.0",
     "@password2d/core": "file:../core",
+    "rxjs": "~7.8.0",
     "tslib": "^2.0.0"
   },
   "bundledDependencies": [
     "@password2d/core"
   ],
   "devDependencies": {
+    "@angular/compiler": "^20.3.0",
     "typescript": "^5.5.0",
     "jest": "^30.2.0",
     "jest-preset-angular": "^14.0.0",
     "@types/jest": "^30.0.0",
-    "@angular/platform-browser": "^17.0.0",
-    "@angular/platform-browser-dynamic": "^17.0.0"
+    "zone.js": "~0.15.0",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/platform-browser-dynamic": "^20.3.0"
   }
 }
