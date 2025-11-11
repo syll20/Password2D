@@ -2,16 +2,36 @@
   "name": "@password2d/angular",
   "version": "1.0.0",
   "description": "Angular bindings for the 2D Password engine",
+  "type": "module",
   "author": "Password2D Team",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "node_modules/@password2d/core"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "jest --passWithNoTests",
+    "build:core": "npm --prefix ../core run build",
+    "prepack": "npm run build:core && npm run build && rm -rf node_modules/@password2d/core && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@angular/core": "^17.0.0",
     "@angular/common": "^17.0.0",
-    "@password2d/core": "workspace:*"
+    "@password2d/core": "file:../core",
+    "tslib": "^2.0.0"
+  },
+  "bundledDependencies": [
+    "@password2d/core"
+  ],
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "jest": "^30.2.0",
+    "jest-preset-angular": "^14.0.0",
+    "@types/jest": "^30.0.0",
+    "@angular/platform-browser": "^17.0.0",
+    "@angular/platform-browser-dynamic": "^17.0.0"
   }
 }

@@ -1,14 +1,14 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../core/tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "outDir": "dist",
-    "target": "ES2020",
-    "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@password2d/core": ["../core/src"]
+    }
   },
   "include": ["src"]
 }

@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input, Output, EventEmitter, signal } from "@angular/core";
 import { Password2DService } from "./password2d.service";
 import { Password2DOptions } from "@password2d/core";
@@ -5,6 +6,7 @@ import { Password2DOptions } from "@password2d/core";
 @Component({
   selector: "password2d-grid",
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="space-y-2">
       <div role="group" aria-label="2D password grid">
