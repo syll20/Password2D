@@ -5,36 +5,46 @@
   "type": "module",
   "author": "Password2D Team",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/fesm2022/password2d-angular.mjs",
+  "module": "dist/esm2022/password2d-angular.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "esm2022": "./dist/esm2022/password2d-angular.mjs",
+      "fesm2022": "./dist/fesm2022/password2d-angular.mjs",
+      "import": "./dist/fesm2022/password2d-angular.mjs",
+      "default": "./dist/fesm2022/password2d-angular.mjs"
+    }
+  },
   "files": [
-    "dist",
-    "node_modules/@password2d/core"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "jest --passWithNoTests",
-    "build:core": "npm --prefix ../core run build",
-    "prepack": "npm run build:core && npm run build && rm -rf node_modules/@password2d/core && mkdir -p node_modules/@password2d/core && cp -r ../core/dist node_modules/@password2d/core && echo '{\"name\": \"@password2d/core\", \"version\": \"1.0.0\", \"main\": \"dist/index.js\"}' > node_modules/@password2d/core/package.json"
+    "build": "ng-packagr -p ng-package.json",
+    "test": "jest --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@angular/common": "^20.3.0",
+    "@angular/core": "^20.3.0"
   },
   "dependencies": {
-    "@angular/core": "^20.3.0",
-    "@angular/common": "^20.3.0",
     "@password2d/core": "file:../core",
     "rxjs": "~7.8.0",
     "tslib": "^2.0.0"
   },
-  "bundledDependencies": [
-    "@password2d/core"
-  ],
   "devDependencies": {
+    "@angular/common": "^20.3.0",
+    "@angular/core": "^20.3.0",
     "@angular/compiler": "^20.3.0",
-    "typescript": "^5.5.0",
+    "@angular/compiler-cli": "^20.3.0",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/platform-browser-dynamic": "^20.3.0",
+    "@types/jest": "^30.0.0",
     "jest": "^30.2.0",
     "jest-preset-angular": "^14.0.0",
-    "@types/jest": "^30.0.0",
-    "zone.js": "~0.15.0",
-    "@angular/platform-browser": "^20.3.0",
-    "@angular/platform-browser-dynamic": "^20.3.0"
+    "ng-packagr": "^20.3.0",
+    "typescript": "^5.5.0",
+    "zone.js": "~0.15.0"
   }
 }
