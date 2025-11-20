@@ -9,9 +9,9 @@ import { Password2DEngine, Password2DOptions } from "@password2d/core";
   template: `
     <div class="space-y-2">
       <div role="group" aria-label="2D password grid">
-        <div *ngFor="let row of grid(); let r = index" class="flex space-x-1">
+        <div *ngFor="let row of grid(); let r = index; trackBy: trackByRow" class="flex space-x-1">
           <div
-            *ngFor="let cell of row; let c = index"
+            *ngFor="let cell of row; let c = index; trackBy: trackByCell"
             tabindex="0"
             class="border border-gray-400 rounded flex items-center justify-center
                    text-lg cursor-text focus:outline-none focus:ring-2 focus:ring-cyan-500
@@ -42,15 +42,21 @@ export class Password2DGridComponent implements OnInit {
 
   private ROWS: number = 2;
   private COLS: number = 8;
-  
+
   engine!: Password2DEngine;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    this.engine = new Password2DEngine(this.options);
-    this.ROWS = this.options.rows ?? 2;
-    this.COLS = this.options.cols ?? 8;
+    // Clone options to avoid mutating shared input object
+    const opts: Password2DOptions = { ...this.options };
+    // Ensure maxCharsPerCell defaults to 1 if not specified
+    if (opts.maxCharsPerCell === undefined) {
+      opts.maxCharsPerCell = 1;
+    }
+    this.engine = new Password2DEngine(opts);
+    this.ROWS = opts.rows ?? 2;
+    this.COLS = opts.cols ?? 8;
   }
 
   grid(): string[][] {
@@ -103,12 +109,33 @@ export class Password2DGridComponent implements OnInit {
     }
   }
 
+  // Store last focused cell index to restore after mask toggle
+  private lastFocusedIndex: number | null = null;
+
   toggleMask() {
+    // Capture currently focused cell index
+    const active = this.gridCells.find((_, i) => _.nativeElement === document.activeElement);
+    this.lastFocusedIndex = active ? this.gridCells.toArray().indexOf(active) : null;
     this.engine.toggleMask();
+    // After view updates, restore focus if we had a focused cell
+    setTimeout(() => {
+      if (this.lastFocusedIndex !== null && this.gridCells && this.gridCells.length > this.lastFocusedIndex) {
+        this.gridCells.toArray()[this.lastFocusedIndex].nativeElement.focus();
+      }
+    }, 0);
   }
+
 
   reset() {
     this.engine.reset();
     this.passwordChange.emit("");
+  }
+
+  trackByRow(index: number, item: string[]): number {
+    return index;
+  }
+
+  trackByCell(index: number, item: string): number {
+    return index;
   }
 }
