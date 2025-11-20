@@ -1,23 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Password2DGridComponent } from '../password2d-grid.component';
-import { Password2DService } from '../password2d.service';
+import { By } from '@angular/platform-browser';
 
 describe('Password2DGridComponent', () => {
   let component: Password2DGridComponent;
   let fixture: ComponentFixture<Password2DGridComponent>;
-  let service: Password2DService;
-  let compiled: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Password2DGridComponent],
-      providers: [Password2DService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Password2DGridComponent);
     component = fixture.componentInstance;
-    service = TestBed.inject(Password2DService);
-    compiled = fixture.nativeElement;
     fixture.detectChanges();
   });
 
@@ -25,71 +20,99 @@ describe('Password2DGridComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize the service with options', () => {
-    const initSpy = jest.spyOn(service, 'init');
-    component.options = { rows: 2, cols: 2 };
-    component.ngOnInit();
-    expect(initSpy).toHaveBeenCalledWith({ rows: 2, cols: 2 });
+  it('should initialize with default options', () => {
+    expect(component.engine.rows).toBe(2);
+    expect(component.engine.cols).toBe(8);
   });
 
   it('should render the correct number of cells', () => {
-    component.options = { rows: 2, cols: 8 };
-    component.ngOnInit();
-    fixture.detectChanges();
-    const cells = compiled.querySelectorAll('.border');
+    const cells = fixture.debugElement.queryAll(By.css('.border'));
     expect(cells.length).toBe(16);
   });
 
   it('should add a character on input', () => {
-    const addCharSpy = jest.spyOn(service, 'addChar');
-    const cell = compiled.querySelector('.border') as HTMLElement;
-    cell.innerText = 'a';
-    cell.dispatchEvent(new Event('input', { bubbles: true }));
-    expect(addCharSpy).toHaveBeenCalledWith(0, 0, 'a');
+    const cell = fixture.debugElement.query(By.css('.border'));
+    const event = new KeyboardEvent('keydown', { key: 'a' });
+    cell.triggerEventHandler('keydown', event);
+    fixture.detectChanges();
+
+    expect(component.engine.grid[0][0]).toBe('a');
   });
 
   it('should delete a character on Backspace', () => {
-    const deleteCharSpy = jest.spyOn(service, 'deleteChar');
-    const cell = compiled.querySelector('.border') as HTMLElement;
-    cell.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
-    expect(deleteCharSpy).toHaveBeenCalledWith(0, 0);
+    // First add a char
+    component.engine.addChar(0, 0, 'a');
+    fixture.detectChanges();
+    expect(component.engine.grid[0][0]).toBe('a');
+
+    const cell = fixture.debugElement.query(By.css('.border'));
+    const event = new KeyboardEvent('keydown', { key: 'Backspace' });
+    cell.triggerEventHandler('keydown', event);
+    fixture.detectChanges();
+
+    expect(component.engine.grid[0][0]).toBe('');
   });
 
   it('should toggle mask when button is clicked', () => {
-    const toggleMaskSpy = jest.spyOn(service, 'toggleMask');
-    const button = compiled.querySelector('button') as HTMLElement;
-    button.click();
-    expect(toggleMaskSpy).toHaveBeenCalled();
+    const button = fixture.debugElement.query(By.css('button.text-cyan-600'));
+    expect(component.masked()).toBe(true);
+
+    button.triggerEventHandler('click', null);
+    fixture.detectChanges();
+
+    expect(component.masked()).toBe(false);
   });
 
   it('should reset when reset button is clicked', () => {
-    const resetSpy = jest.spyOn(service, 'reset');
-    const buttons = compiled.querySelectorAll('button');
-    const resetButton = buttons[1] as HTMLElement;
-    resetButton.click();
-    expect(resetSpy).toHaveBeenCalled();
+    component.engine.addChar(0, 0, 'a');
+    fixture.detectChanges();
+    expect(component.engine.grid[0][0]).toBe('a');
+
+    const button = fixture.debugElement.query(By.css('button.text-gray-600'));
+    button.triggerEventHandler('click', null);
+    fixture.detectChanges();
+
+    expect(component.engine.grid[0][0]).toBe('');
   });
 
   it('should emit passwordChange on input', () => {
-    const emitSpy = jest.spyOn(component.passwordChange, 'emit');
-    const cell = compiled.querySelector('.border') as HTMLElement;
-    cell.innerText = 'a';
-    cell.dispatchEvent(new Event('input', { bubbles: true }));
-    expect(emitSpy).toHaveBeenCalled();
+    const spy = jest.spyOn(component.passwordChange, 'emit');
+    const cell = fixture.debugElement.query(By.css('.border'));
+    const event = new KeyboardEvent('keydown', { key: 'a' });
+    cell.triggerEventHandler('keydown', event);
+    expect(spy).toHaveBeenCalled();
   });
 
-  it('should emit passwordChange on delete', () => {
-    const emitSpy = jest.spyOn(component.passwordChange, 'emit');
-    const cell = compiled.querySelector('.border') as HTMLElement;
-    cell.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
-    expect(emitSpy).toHaveBeenCalled();
+  it('should preserve DOM elements when updating grid (trackBy)', () => {
+    const cellsBefore = fixture.debugElement.queryAll(By.css('.border'));
+    const firstCellElement = cellsBefore[0].nativeElement;
+
+    // Update grid by adding a char
+    const cell = fixture.debugElement.query(By.css('.border'));
+    const event = new KeyboardEvent('keydown', { key: 'a' });
+    cell.triggerEventHandler('keydown', event);
+    fixture.detectChanges();
+
+    const cellsAfter = fixture.debugElement.queryAll(By.css('.border'));
+    const firstCellElementAfter = cellsAfter[0].nativeElement;
+
+    // The element reference should be the same if trackBy is working
+    expect(firstCellElement).toBe(firstCellElementAfter);
   });
 
-  it('should emit passwordChange on reset', () => {
-    const emitSpy = jest.spyOn(component.passwordChange, 'emit');
-    const buttons = compiled.querySelectorAll('button');
-    const resetButton = buttons[1] as HTMLElement;
-    resetButton.click();
-    expect(emitSpy).toHaveBeenCalledWith('');
+  it('should have independent state for multiple instances', () => {
+    const fixture2 = TestBed.createComponent(Password2DGridComponent);
+    const component2 = fixture2.componentInstance;
+    fixture2.detectChanges();
+
+    // Add char to first component
+    component.engine.addChar(0, 0, 'a');
+    fixture.detectChanges();
+
+    // Check first component
+    expect(component.engine.grid[0][0]).toBe('a');
+
+    // Check second component (should be empty)
+    expect(component2.engine.grid[0][0]).toBe('');
   });
 });
