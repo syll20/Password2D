@@ -1,5 +1,4 @@
 DO-NOT-PUSH.md
-GEMINI.md
 examples/
 *.tgz
 packages/react/node_modules/
@@ -14,7 +13,6 @@ packages/angular/node_modules/
 packages/angular/demo
 packages/angular/dist/
 packages/vanilla/node_modules/
-packages/vanilla/demo
 packages/vanilla/dist/
 
 

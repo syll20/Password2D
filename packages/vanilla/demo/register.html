@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Password2D Vanilla</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">Register</h1>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <input type="email" id="email-input"
+                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="you@example.com">
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <div id="pwd-grid"></div>
+        </div>
+
+        <div class="mb-8">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+            <div id="confirm-grid"></div>
+        </div>
+
+        <div id="error-msg" class="hidden mb-4 text-red-600 text-sm"></div>
+
+        <button id="register-btn"
+            class="w-full py-3 px-4 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition font-medium">
+            Register
+        </button>
+
+        <div class="mt-4 text-center">
+            <a href="index.html" class="text-sm text-gray-500 hover:underline">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="../dist/index.global.js"></script>
+    <script>
+        const Password2DGrid = window.Password2D.Password2D;
+
+        const emailInput = document.getElementById('email-input');
+        const pwdContainer = document.getElementById('pwd-grid');
+        const confirmContainer = document.getElementById('confirm-grid');
+        const registerBtn = document.getElementById('register-btn');
+        const errorMsg = document.getElementById('error-msg');
+
+        const pwdGrid = new Password2DGrid(pwdContainer, {
+            rows: 2,
+            cols: 4,
+            showText: "Show",
+            hideText: "Hide"
+        });
+
+        const confirmGrid = new Password2DGrid(confirmContainer, {
+            rows: 2,
+            cols: 4,
+            showText: "Show",
+            hideText: "Hide"
+        });
+
+        registerBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            const pwd = pwdGrid.value;
+            const confirm = confirmGrid.value;
+
+            if (!email) {
+                showError("Email is required");
+                return;
+            }
+
+            if (!pwd) {
+                showError("Password is required");
+                return;
+            }
+
+            if (pwd !== confirm) {
+                showError("Passwords do not match");
+                return;
+            }
+
+            // Success
+            localStorage.setItem('user_' + email, pwd);
+            window.location.href = 'login.html';
+        });
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "@password2d/vanilla",
+  "version": "1.0.0",
+  "description": "Vanilla TypeScript implementation of Password2D",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs,iife --dts --global-name Password2D",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "password2d",
+    "vanilla",
+    "typescript"
+  ],
+  "author": "syll20",
+  "license": "MIT",
+  "dependencies": {
+    "@password2d/core": "file:../core"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
