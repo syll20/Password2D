@@ -52,6 +52,12 @@
             hideText: "Hide"
         });
 
+        // Pre-fill email from URL
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('email')) {
+            emailInput.value = params.get('email');
+        }
+
         loginBtn.addEventListener('click', () => {
             const email = emailInput.value.trim();
             const input = loginGrid.value;
@@ -61,7 +67,12 @@
                 return;
             }
 
-            const stored = localStorage.getItem('user_' + email);
+            let stored = null;
+            try {
+                stored = localStorage.getItem('user_' + email);
+            } catch (e) {
+                console.warn('localStorage not available', e);
+            }
 
             if (!stored) {
                 showStatus("No user found with this email.", false);

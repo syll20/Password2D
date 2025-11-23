@@ -86,8 +86,16 @@
             }
 
             // Success
-            localStorage.setItem('user_' + email, pwd);
-            window.location.href = 'login.html';
+            try {
+                localStorage.setItem('user_' + email, pwd);
+            } catch (e) {
+                console.warn('localStorage not available', e);
+            }
+
+            // Fallback for file:// protocol
+            const params = new URLSearchParams();
+            params.set('email', email);
+            window.location.href = 'login.html?' + params.toString();
         });
 
         function showError(msg) {
