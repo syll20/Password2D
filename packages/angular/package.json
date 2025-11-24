@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Angular bindings for the 2D Password engine",
   "type": "module",
-  "author": "Password2D Team",
+  "author": "syll20",
   "license": "MIT",
   "main": "dist/fesm2022/password2d-angular.mjs",
   "module": "dist/esm2022/password2d-angular.mjs",
@@ -18,7 +18,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json"
   ],
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
@@ -29,7 +30,7 @@
     "@angular/core": "^20.3.0"
   },
   "dependencies": {
-    "@password2d/core": "file:../core",
+    "@password2d/core": "^1.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.0.0"
   },

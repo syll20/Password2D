@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "node_modules/@password2d/core"
+    "package.json"
   ],
   "scripts": {
     "build": "tsup",
@@ -19,7 +19,7 @@
     "vue": "^3.3.0"
   },
   "dependencies": {
-    "@password2d/core": "file:./node_modules/@password2d/core",
+    "@password2d/core": "^1.0.0",
     "vue": ">=3.3.0"
   },
   "bundledDependencies": [
