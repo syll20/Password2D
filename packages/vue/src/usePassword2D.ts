@@ -2,7 +2,7 @@ import { ref, defineComponent, h } from 'vue'
 import { Password2DEngine, Password2DOptions } from '@password2d/core'
 import PasswordGrid from './Password2DGrid.vue'
 
-export function use2DPassword(options: Password2DOptions = {}) {
+export function usePassword2D(options: Password2DOptions = {}) {
   const engine = new Password2DEngine(options)
 
   // encoded reflects the engine's flattened value

@@ -3,7 +3,7 @@ import { Password2DEngine, Password2DOptions } from "@password2d/core";
 import { Password2DGrid } from "./Password2DGrid";
 
 /** Stable use2DPassword hook */
-export function use2DPassword(options: Password2DOptions = {}) {
+export function usePassword2D(options: Password2DOptions = {}) {
   const [engine] = useState(() => new Password2DEngine(options));
   const [masked, setMasked] = useState(engine.masked);
   const [version, setVersion] = useState(0);

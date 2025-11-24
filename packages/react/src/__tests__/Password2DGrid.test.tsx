@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { use2DPassword } from '../use2DPassword';
+import { usePassword2D } from '../usePassword2D';
 
 function Harness(props: any) {
-  const [encoded, PasswordGrid] = use2DPassword(props);
+  const [encoded, PasswordGrid] = usePassword2D(props);
   return (
     <div>
       <PasswordGrid />
