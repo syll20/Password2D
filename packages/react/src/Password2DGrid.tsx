@@ -135,10 +135,21 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
         focusCell(r, c - 1);
         break;
       case "ArrowRight":
+        e.preventDefault();
+        {
+          const next = engine.moveToNextCell(r, c);
+          if (next) focusCell(next.row, next.col);
+        }
+        break;
       case "Tab":
         e.preventDefault();
-        const next = engine.moveToNextCell(r, c);
-        if (next) focusCell(next.row, next.col);
+        if (e.shiftKey) {
+          const prev = engine.moveToPrevCell(r, c);
+          if (prev) focusCell(prev.row, prev.col);
+        } else {
+          const nextTab = engine.moveToNextCell(r, c);
+          if (nextTab) focusCell(nextTab.row, nextTab.col);
+        }
         break;
     }
   };

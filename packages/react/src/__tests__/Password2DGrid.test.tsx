@@ -89,6 +89,24 @@ test('arrow and Tab navigation moves focus between cells', () => {
   expect(document.activeElement).toBe(third);
 });
 
+test('Shift+Tab moves focus backward to previous cell', () => {
+  render(<Harness rows={1} cols={3} />);
+  const cells = screen.getAllByRole('textbox');
+  const [first, second, third] = cells;
+
+  // Focus second, Shift+Tab should move back to first
+  fireEvent.focus(second);
+  expect(document.activeElement).toBe(second);
+  fireEvent.keyDown(second, { key: 'Tab', shiftKey: true });
+  expect(document.activeElement).toBe(first);
+
+  // Focus third, Shift+Tab should move back to second
+  fireEvent.focus(third);
+  expect(document.activeElement).toBe(third);
+  fireEvent.keyDown(third, { key: 'Tab', shiftKey: true });
+  expect(document.activeElement).toBe(second);
+});
+
 test('deletion (Backspace) removes last character', () => {
   render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
   const first = screen.getAllByRole('textbox')[0];
