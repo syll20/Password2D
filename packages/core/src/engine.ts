@@ -7,7 +7,6 @@ export interface Password2DOptions {
   className?: string;
   activeCellClassName?: string;
   cellSize?: string;
-  // Optional customization for control buttons and their text/aria labels
   showHideButtonClassName?: string;
   resetButtonClassName?: string;
   showText?: string;
@@ -66,13 +65,13 @@ export class Password2DEngine {
     this.className = className;
     this.activeCellClassName = activeCellClassName;
     this.cellSize = cellSize;
-  this.showHideButtonClassName = showHideButtonClassName;
-  this.resetButtonClassName = resetButtonClassName;
-  this.showText = showText;
-  this.hideText = hideText;
-  this.resetText = resetText;
-  this.showAriaLabel = showAriaLabel;
-  this.hideAriaLabel = hideAriaLabel;
+    this.showHideButtonClassName = showHideButtonClassName;
+    this.resetButtonClassName = resetButtonClassName;
+    this.showText = showText;
+    this.hideText = hideText;
+    this.resetText = resetText;
+    this.showAriaLabel = showAriaLabel;
+    this.hideAriaLabel = hideAriaLabel;
     this.grid = Array.from({ length: rows }, () => Array(cols).fill(""));
     this.cursor = { row: 0, col: 0 };
   }
@@ -83,7 +82,6 @@ addChar(row: number, col: number, char: string): CellPosition | null {
 
   let cell = this.grid[row][col] || "";
   if (cell.length >= this.maxCharsPerCell) {
-    // cell full — move first
     return this.moveToNextCell(row, col);
   }
 
@@ -96,7 +94,6 @@ addChar(row: number, col: number, char: string): CellPosition | null {
 
   // if cell reached max → move to next
   if (this.grid[row][col].length >= this.maxCharsPerCell) {
-    this.cursor = { row, col };
     return this.moveToNextCell(row, col);
   }
 
@@ -104,93 +101,93 @@ addChar(row: number, col: number, char: string): CellPosition | null {
   return { row, col };
 }
 
-  deleteChar(row: number, col: number) {
-    if (this.isInvalidCell(row, col)) return;
-    this.grid[row][col] = (this.grid[row][col] || "").slice(0, -1);
-  }
+deleteChar(row: number, col: number) {
+  if (this.isInvalidCell(row, col)) return;
+  this.grid[row][col] = (this.grid[row][col] || "").slice(0, -1);
+}
 
-  reset() {
-    this.grid = Array.from({ length: this.rows }, () => Array(this.cols).fill(""));
-    this.cursor = { row: 0, col: 0 };
-  }
+reset() {
+  this.grid = Array.from({ length: this.rows }, () => Array(this.cols).fill(""));
+  this.cursor = { row: 0, col: 0 };
+}
 
-  toggleMask() {
-    this.masked = !this.masked;
-  }
+toggleMask() {
+  this.masked = !this.masked;
+}
 
-  getFlattened(): string {
-    return this.grid
-      .map((row, y) =>
-        row
-          .map((val, x) => {
-            if (!val) return "";
-            return this.coordinateMode === "yx"
-              ? `(${y},${x})${val}`
-              : `(${x},${y})${val}`;
-          })
-          .join("")
-      )
-      .join("");
-  }
+getFlattened(): string {
+  return this.grid
+    .map((row, y) =>
+      row
+        .map((val, x) => {
+          if (!val) return "";
+          return this.coordinateMode === "yx"
+            ? `(${y},${x})${val}`
+            : `(${x},${y})${val}`;
+        })
+        .join("")
+    )
+    .join("");
+}
 
-  getMaskedGrid(): string[][] {
-    return this.masked
-      ? this.grid.map((row) => row.map((val) => "•".repeat(val.length)))
-      : this.grid;
-  }
+getMaskedGrid(): string[][] {
+  return this.masked
+    ? this.grid.map((row) => row.map((val) => "•".repeat(val.length)))
+    : this.grid;
+}
 
-  clone(): Password2DEngine {
-    const clone = new Password2DEngine({
-      rows: this.rows,
-      cols: this.cols,
-      maxCharsPerCell: this.maxCharsPerCell,
-      coordinateMode: this.coordinateMode,
-      masked: this.masked,
-      className: this.className,
-      activeCellClassName: this.activeCellClassName,
-      cellSize: this.cellSize,
-      showHideButtonClassName: this.showHideButtonClassName,
-      resetButtonClassName: this.resetButtonClassName,
-      showText: this.showText,
-      hideText: this.hideText,
-      resetText: this.resetText,
-      showAriaLabel: this.showAriaLabel,
-      hideAriaLabel: this.hideAriaLabel,
-    });
-    clone.grid = this.grid.map((r) => [...r]);
-    clone.cursor = { ...this.cursor };
-    return clone;
-  }
+clone(): Password2DEngine {
+  const clone = new Password2DEngine({
+    rows: this.rows,
+    cols: this.cols,
+    maxCharsPerCell: this.maxCharsPerCell,
+    coordinateMode: this.coordinateMode,
+    masked: this.masked,
+    className: this.className,
+    activeCellClassName: this.activeCellClassName,
+    cellSize: this.cellSize,
+    showHideButtonClassName: this.showHideButtonClassName,
+    resetButtonClassName: this.resetButtonClassName,
+    showText: this.showText,
+    hideText: this.hideText,
+    resetText: this.resetText,
+    showAriaLabel: this.showAriaLabel,
+    hideAriaLabel: this.hideAriaLabel,
+  });
+  clone.grid = this.grid.map((r) => [...r]);
+  clone.cursor = { ...this.cursor };
+  return clone;
+}
 
-  moveToNextCell(row = this.cursor.row, col = this.cursor.col): CellPosition {
-    col++;
-    if (col >= this.cols) {
-      col = 0;
-      row++;
-    }
-    if (row >= this.rows) {
-      row = this.rows - 1;
-      col = this.cols - 1;
-    }
-    this.cursor = { row, col };
-    return this.cursor;
+moveToNextCell(row = this.cursor.row, col = this.cursor.col): CellPosition {
+  col++;
+  if (col >= this.cols) {
+    col = 0;
+    row++;
   }
+  if (row >= this.rows) {
+    row = this.rows - 1;
+    col = this.cols - 1;
+  }
+  this.cursor = { row, col };
+  return this.cursor;
+}
 
-  moveToPrevCell(row = this.cursor.row, col = this.cursor.col): CellPosition {
-    col--;
-    if (col < 0) {
-      row--;
-      col = this.cols - 1;
-    }
-    if (row < 0) {
-      row = 0;
-      col = 0;
-    }
-    this.cursor = { row, col };
-    return this.cursor;
+moveToPrevCell(row = this.cursor.row, col = this.cursor.col): CellPosition {
+  col--;
+  if (col < 0) {
+    row--;
+    col = this.cols - 1;
   }
+  if (row < 0) {
+    row = 0;
+    col = 0;
+  }
+  this.cursor = { row, col };
+  return this.cursor;
+}
 
-  private isInvalidCell(row: number, col: number): boolean {
-    return row < 0 || col < 0 || row >= this.rows || col >= this.cols;
-  }
+private isInvalidCell(row: number, col: number): boolean {
+  return row < 0 || col < 0 || row >= this.rows || col >= this.cols;
+}
 }
