@@ -284,8 +284,13 @@ export class Password2D {
             case "ArrowRight":
             case "Tab":
                 e.preventDefault();
-                const next = this.engine.moveToNextCell(r, c);
-                if (next) this.focusCell(next.row, next.col);
+                if (e.shiftKey) {
+                    const prev = this.engine.moveToPrevCell(r, c);
+                    if (prev) this.focusCell(prev.row, prev.col);
+                } else {
+                    const next = this.engine.moveToNextCell(r, c);
+                    if (next) this.focusCell(next.row, next.col);
+                }
                 break;
         }
     }
