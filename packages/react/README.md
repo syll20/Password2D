@@ -121,7 +121,7 @@ usePassword2D({
 
 Full documentation and core engine details:
 
-[https://github.com/password2d/password2d](https://github.com/password2d/password2d)
+[https://github.com/syll20/password2d](https://github.com/syll20/password2d)
 
 ---
 

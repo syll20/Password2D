@@ -87,7 +87,7 @@ submit() {
 
 Full docs available in the main repo:
 
-[https://github.com/password2d/password2d](https://github.com/password2d/password2d)
+[https://github.com/syll20/password2d](https://github.com/syll20/password2d)
 
 ---
 

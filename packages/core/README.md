@@ -85,7 +85,7 @@ interface Password2DOptions {
 
 See full technical docs in the main repository:
 
-[https://github.com/password2d/password2d](https://github.com/password2d/password2d)
+[https://github.com/syll20/password2d](https://github.com/syll20/password2d)
 
 ---
 
