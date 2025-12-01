@@ -296,4 +296,26 @@ describe('Password2DGrid (Vue)', () => {
     const active = document.activeElement as HTMLElement
     expect(active).toBe(cells[3].element)
   })
+
+  it('Shift+Tab moves focus backward to previous cell', async () => {
+    const engine = new Password2DEngine({ rows: 1, cols: 3 })
+    const wrapper = mount(PasswordGrid, {
+      attachTo: document.body,
+      props: { engine, masked: false, onChange: () => {} }
+    })
+  const cells = wrapper.findAll('[role="textbox"]')
+  const [first, second, third] = cells;
+
+  // Focus second, Shift+Tab should move back to first
+  ;(second.element as HTMLElement).focus()
+  await second.trigger('keydown', { key: 'Tab', shiftKey: true })
+  await nextTick()
+  expect(document.activeElement).toBe(first.element)
+  
+  // Focus third, Shift+Tab should move back to second
+  ;(third.element as HTMLElement).focus()
+  await third.trigger('keydown', { key: 'Tab', shiftKey: true })
+  await nextTick()
+  expect(document.activeElement).toBe(second.element)  
+});
 })

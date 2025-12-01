@@ -182,9 +182,14 @@ function handleKeyDown(e: KeyboardEvent, r: number, c: number) {
       break
     case 'ArrowRight':
     case 'Tab':
-      e.preventDefault()
-      const next = props.engine.moveToNextCell(r, c)
-      if (next) focusCell(next.row, next.col)
+      e.preventDefault();
+      if (e.shiftKey) {
+        const prev = props.engine.moveToPrevCell(r, c);
+        if (prev) focusCell(prev.row, prev.col);
+      } else {
+        const next = props.engine.moveToNextCell(r, c)
+        if (next) focusCell(next.row, next.col)
+      }
       break
   }
 }
