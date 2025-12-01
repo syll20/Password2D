@@ -20,7 +20,6 @@ cfg.transform = {
     {
       tsconfig: '<rootDir>/tsconfig.spec.json',
       stringifyContentPathRegex: '\\.(html|svg)$',
-      isolatedModules: true,
       diagnostics: {
         ignoreCodes: [151001]
       },

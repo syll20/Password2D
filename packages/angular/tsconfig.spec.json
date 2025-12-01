@@ -14,11 +14,11 @@
     "esModuleInterop": true,
     "target": "ES2022",
     "module": "ES2022",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "lib": ["ES2022", "dom"],
-    "importHelpers": true
+    "importHelpers": true,
+    "isolatedModules": true
   },
   "include": [
     "src/**/*.spec.ts",
