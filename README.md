@@ -10,6 +10,8 @@ Password2D is an authentication innovation that replaces the classic single-line
 
 This creates **significantly higher entropy**, even with short passwords, without changing backend password handling.
 
+![2x8 and 6x6 password2d grid](./docs/images/2x8-6x6-password2d-grid.png "2x8 and 6x6 password2d grid")
+
 Password2D works everywhere:
 
 * ✔ React
