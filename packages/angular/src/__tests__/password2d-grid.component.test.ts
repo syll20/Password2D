@@ -115,4 +115,37 @@ describe('Password2DGridComponent', () => {
     // Check second component (should be empty)
     expect(component2.engine.grid[0][0]).toBe('');
   });
+
+  it('Shift+Tab moves focus backward to previous cell', () => {
+    const fixture2 = TestBed.createComponent(Password2DGridComponent);
+    const component2 = fixture2.componentInstance;
+    fixture2.detectChanges();
+
+    // Focus second, Shift+Tab should move back to first
+    const cells = fixture2.debugElement.queryAll(By.css('.border'));
+    const firstCell = cells[0].nativeElement;
+    const secondCell = cells[1].nativeElement;
+
+    secondCell.focus();
+    expect(document.activeElement).toBe(secondCell);
+
+    const shiftTabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+    });
+    secondCell.dispatchEvent(shiftTabEvent);
+    fixture2.detectChanges();
+    
+    expect(document.activeElement).toBe(firstCell);
+      
+    // Focus third, Shift+Tab should move back to second
+    const thirdCell = cells[2].nativeElement;
+    thirdCell.focus();
+    expect(document.activeElement).toBe(thirdCell);
+
+    thirdCell.dispatchEvent(shiftTabEvent);
+    fixture2.detectChanges();
+
+    expect(document.activeElement).toBe(secondCell);
+  });
 });

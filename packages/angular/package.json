@@ -1,6 +1,6 @@
 {
   "name": "@password2d/angular",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Angular bindings for the 2D Password engine",
   "type": "module",
   "author": "syll20",

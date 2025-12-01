@@ -76,6 +76,33 @@ export class Password2DGridComponent implements OnInit {
       event.preventDefault();
       this.engine.deleteChar(row, col);
       this.passwordChange.emit(this.flattened());
+    } else if (event.key === "Tab") {
+      // Handle tab navigation (forward/backward with Shift)
+      event.preventDefault();
+      let nextRow = row;
+      let nextCol = col;
+      if ((event as KeyboardEvent).shiftKey) {
+        // Move to previous cell
+        if (col === 0 && row > 0) {
+          nextRow = row - 1;
+          nextCol = this.COLS - 1;
+        } else if (col > 0) {
+          nextCol = col - 1;
+        }
+      } else {
+        // Move to next cell
+        if (col === this.COLS - 1 && row < this.ROWS - 1) {
+          nextRow = row + 1;
+          nextCol = 0;
+        } else if (col < this.COLS - 1) {
+          nextCol = col + 1;
+        }
+      }
+
+      const nextIndexTab = nextRow * this.COLS + nextCol;
+      if (this.gridCells && this.gridCells.length > nextIndexTab) {
+        this.gridCells.toArray()[nextIndexTab].nativeElement.focus();
+      }
     } else if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
       event.preventDefault();
 
