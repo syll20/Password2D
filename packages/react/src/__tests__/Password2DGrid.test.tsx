@@ -13,6 +13,7 @@ function Harness(props: any) {
   );
 }
 
+
 test('typing printable keys accumulates up to maxCharsPerCell', () => {
   render(<Harness rows={1} cols={3} maxCharsPerCell={3} masked={false} />);
   const cells = screen.getAllByRole('textbox');
@@ -27,6 +28,7 @@ test('typing printable keys accumulates up to maxCharsPerCell', () => {
   expect(encoded).toContain('(0,0)abc');
 });
 
+
 test('masked mode shows dots but engine still accumulates characters', () => {
   render(<Harness rows={1} cols={2} maxCharsPerCell={2} masked={true} />);
   const cells = screen.getAllByRole('textbox');
@@ -40,6 +42,7 @@ test('masked mode shows dots but engine still accumulates characters', () => {
   expect(encoded).toContain('(0,0)xy');
 });
 
+
 test('custom button text and classes are rendered', () => {
   render(
     <Harness
@@ -48,7 +51,7 @@ test('custom button text and classes are rendered', () => {
       showText="Afficher"
       hideText="Masquer"
       resetText="Réinitialiser"
-      showHideButtonClassName="custom-show"
+      showHideButtonClassName="custom-toggle"
       resetButtonClassName="custom-reset"
     />
   );
@@ -59,15 +62,16 @@ test('custom button text and classes are rendered', () => {
 
   // Check classes
   const showBtn = screen.getByText('Afficher') || screen.getByText('Masquer');
-  expect(showBtn).toHaveClass('custom-show');
+  expect(showBtn).toHaveClass('custom-toggle');
   const resetBtn = screen.getByText('Réinitialiser');
   expect(resetBtn).toHaveClass('custom-reset');
 });
 
+
 test('arrow and Tab navigation moves focus between cells', () => {
-  render(<Harness rows={1} cols={3} />);
+  render(<Harness rows={2} cols={3} />);
   const cells = screen.getAllByRole('textbox');
-  const [first, second, third] = cells;
+  const [first, second, third, fourth, fifth, sixth] = cells;
 
   fireEvent.focus(first);
   expect(document.activeElement).toBe(first);
@@ -87,12 +91,30 @@ test('arrow and Tab navigation moves focus between cells', () => {
   // Tab moves to next (wraps same as ArrowRight handler)
   fireEvent.keyDown(second, { key: 'Tab' });
   expect(document.activeElement).toBe(third);
+
+  // ArrowDown -> sixth
+  fireEvent.keyDown(third, { key: 'ArrowDown' });
+  expect(document.activeElement).toBe(sixth);
+
+  // ArrowUp -> third
+  fireEvent.keyDown(sixth, { key: 'ArrowUp' });
+  expect(document.activeElement).toBe(third);
+
+  // Tab moves to next line cell: fourth
+  fireEvent.keyDown(third, { key: 'Tab' });
+  expect(document.activeElement).toBe(fourth);
+
+  // Tab moves to next fifth cell
+  fireEvent.keyDown(fourth, { key: 'Tab' });
+  expect(document.activeElement).toBe(fifth);
+  
 });
 
+
 test('Shift+Tab moves focus backward to previous cell', () => {
-  render(<Harness rows={1} cols={3} />);
+  render(<Harness rows={2} cols={3} />);
   const cells = screen.getAllByRole('textbox');
-  const [first, second, third] = cells;
+  const [first, second, third, fourth, fifth, sixth] = cells;
 
   // Focus second, Shift+Tab should move back to first
   fireEvent.focus(second);
@@ -105,7 +127,14 @@ test('Shift+Tab moves focus backward to previous cell', () => {
   expect(document.activeElement).toBe(third);
   fireEvent.keyDown(third, { key: 'Tab', shiftKey: true });
   expect(document.activeElement).toBe(second);
+
+  // Focus fouth on line 2, Shift+Tab should move back to third on line 1
+  fireEvent.focus(fourth);
+  expect(document.activeElement).toBe(fourth);
+  fireEvent.keyDown(fourth, { key: 'Tab', shiftKey: true });
+  expect(document.activeElement).toBe(third);
 });
+
 
 test('deletion (Backspace) removes last character', () => {
   render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
@@ -130,12 +159,13 @@ test('paste inserts multiple characters into engine', () => {
   // Simulate paste of 'xyz'
   fireEvent.paste(first, {
     clipboardData: {
-      getData: (type: string) => (type === 'text' ? 'xyz' : ''),
+      getData: (type: string) => (type === 'text' ? 'xyzA' : ''),
     },
   } as unknown as DataTransfer);
 
-  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)xyz');
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)xyz(1,0)A');
 });
+
 
 test('IME composition does not process intermediate keystrokes', () => {
   render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
@@ -152,7 +182,18 @@ test('IME composition does not process intermediate keystrokes', () => {
   fireEvent.compositionEnd(first);
   fireEvent.keyDown(first, { key: 'ä' });
   expect(screen.getByTestId('encoded').textContent).toContain('(0,0)ä');
+
+  // test for chinese character
+  fireEvent.compositionStart(first);
+  fireEvent.keyDown(first, { key: 'b' });
+  expect(screen.getByTestId('encoded').textContent).not.toContain('(0,0)b');
+
+  fireEvent.compositionEnd(first);
+  fireEvent.keyDown(first, { key: '汉' });
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)ä汉');
+
 });
+
 
 test('typing more than maxCharsPerCell stops at limit and moves to next cell', () => {
   render(<Harness rows={1} cols={2} maxCharsPerCell={3} masked={false} />);
@@ -173,9 +214,29 @@ test('typing more than maxCharsPerCell stops at limit and moves to next cell', (
   const encoded = screen.getByTestId('encoded').textContent || '';
   // first cell contains only first 3 chars
   expect(encoded).toContain('(0,0)123');
-  // next cell receives the overflowed '4'
+  // overflowed char goes to second cell
   expect(encoded).toContain('(1,0)4');
+  // Full expected string
+  expect(encoded).toBe('(0,0)123(1,0)4');
 });
+
+
+test('encoding respects coordinateMode xy', () => {
+  // Here we set coordinateMode to 'yx' and type in second column, expect (y,x)
+  render(<Harness rows={1} cols={2} coordinateMode={'xy'} masked={false} />);
+  const cells = screen.getAllByRole('textbox');
+  const first = cells[0];
+  fireEvent.focus(first);
+  // move to second cell
+  fireEvent.keyDown(first, { key: 'ArrowRight' });
+  const second = document.activeElement as HTMLElement;
+  fireEvent.keyDown(second, { key: 'q' });
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // In yx mode, for row=0 col=1 we expect (1,0)
+  expect(encoded).toContain('(1,0)q');
+});
+
 
 test('encoding respects coordinateMode yx', () => {
   // Here we set coordinateMode to 'yx' and type in second column, expect (y,x)
@@ -192,6 +253,7 @@ test('encoding respects coordinateMode yx', () => {
   // In yx mode, for row=0 col=1 we expect (0,1)
   expect(encoded).toContain('(0,1)q');
 });
+
 
 test('multi-row wrapping advances to next row after last column', () => {
   // 2 rows x 3 cols, maxCharsPerCell=1 makes each key advance the cursor
@@ -213,6 +275,7 @@ test('multi-row wrapping advances to next row after last column', () => {
   expect(active).toBe(cells[3]);
 });
 
+
 test('multi-row wrapping with maxCharsPerCell > 1 overflows into next row', () => {
   // 2 rows x 2 cols, maxCharsPerCell=2. We'll focus the last col of row0
   // (index 1), type 3 characters: first two fill that cell, third should
@@ -232,9 +295,12 @@ test('multi-row wrapping with maxCharsPerCell > 1 overflows into next row', () =
   const encoded = screen.getByTestId('encoded').textContent || '';
   // Overflowed character should appear in row1 col0 => (0,1)
   expect(encoded).toContain('(0,1)c');
+  // Full expected string
+  expect(encoded).toBe('(1,0)ab(0,1)c');
   // Focus should have moved to that cell (index 2)
   expect(document.activeElement).toBe(cells[2]);
 });
+
 
 test('typing beyond final cell clamps to last cell and discards extra input', () => {
   // 1 row x 2 cols, maxCharsPerCell=2. Typing many chars should clamp at
