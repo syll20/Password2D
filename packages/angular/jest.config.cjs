@@ -11,11 +11,17 @@ const cfg = createBase({
 cfg.roots = ['<rootDir>/src']
 cfg.setupFilesAfterEnv = ['<rootDir>/setup-jest.ts']
 
+// Show each test name during runs
+cfg.verbose = true
+
+// Use the Angular preset for transforms and environment
+cfg.preset = 'jest-preset-angular'
+
 // Restrict tests to this package when running package-level jest
 cfg.testMatch = ['<rootDir>/src/__tests__/**/*.[jt]s?(x)', '<rootDir>/src/?(*.)+(spec|test).[jt]s?(x)']
 
 cfg.transform = {
-  '^.+\.(ts|js|html)$': [
+  '^.+\\.(ts|js|html)$': [
     'jest-preset-angular',
     {
       tsconfig: '<rootDir>/tsconfig.spec.json',
