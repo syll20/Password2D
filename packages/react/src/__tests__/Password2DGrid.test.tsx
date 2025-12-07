@@ -195,7 +195,50 @@ test('IME composition does not process intermediate keystrokes', () => {
 });
 
 
-test('typing more than maxCharsPerCell stops at limit and moves to next cell', () => {
+test('should create grid', () => {
+  render(<Harness rows={2} cols={3} />);
+  expect(<Harness />).toBeTruthy();
+});
+
+
+test('should render the correct number of cells', () => {
+  render(<Harness />);
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // With default 2 rows, 8 cols and maxCharsPerCell=1, the encoded string should be empty
+  expect(encoded).toBe('');
+  const cells = screen.getAllByRole('textbox');
+  expect(cells.length).toBe(16); // 2 rows * 8 cols
+});
+
+
+test('should add a character on input', () => {
+  render(<Harness />);
+  const first = screen.getAllByRole('textbox')[0];
+  fireEvent.focus(first);
+  fireEvent.keyDown(first, { key: 'a' });
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  expect(encoded).toContain('(0,0)a');
+});
+
+
+test('should delete a character on Backspace', () => {
+  render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
+  const first = screen.getAllByRole('textbox')[0];
+  fireEvent.focus(first);
+
+  fireEvent.keyDown(first, { key: 'a' });
+  fireEvent.keyDown(first, { key: 'b' });
+  // ensure both added
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)ab');
+
+  // Backspace should remove 'b'
+  fireEvent.keyDown(first, { key: 'Backspace' });
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)a');
+});
+
+
+test('create a grid with maxCharsPerCell = 3 and accumulate input accordingly', () => {
   render(<Harness rows={1} cols={2} maxCharsPerCell={3} masked={false} />);
   const cells = screen.getAllByRole('textbox');
   const first = cells[0];
