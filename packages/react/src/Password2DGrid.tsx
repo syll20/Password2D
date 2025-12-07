@@ -50,7 +50,7 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
   };
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>, r: number, c: number) => {
-    if (suppressInput.current) return;
+    if (suppressInput.current || isComposing.current) return;
     const el = e.currentTarget;
     const rawTyped = el.innerText || "";
 
@@ -158,6 +158,7 @@ export const Password2DGrid: React.FC<Password2DGridProps> = ({
     e.preventDefault();
     const text = e.clipboardData.getData("text") || "";
     if (!text) return;
+    
     let pos = { row: r, col: c };
     for (const ch of text) {
       const next = engine.addChar(pos.row, pos.col, ch);
