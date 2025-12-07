@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Password2DGridComponent } from '../password2d-grid.component';
 import { By } from '@angular/platform-browser';
+import { Password2DEngine } from '@password2d/core';
 
 describe('Password2DGridComponent', () => {
   let component: Password2DGridComponent;
@@ -16,19 +17,23 @@ describe('Password2DGridComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+
+  it('should create grid', () => {
     expect(component).toBeTruthy();
   });
+
 
   it('should initialize with default options', () => {
     expect(component.engine.rows).toBe(2);
     expect(component.engine.cols).toBe(8);
   });
 
+
   it('should render the correct number of cells', () => {
     const cells = fixture.debugElement.queryAll(By.css('.border'));
     expect(cells.length).toBe(16);
   });
+
 
   it('should add a character on input', () => {
     const cell = fixture.debugElement.query(By.css('.border'));
@@ -38,6 +43,7 @@ describe('Password2DGridComponent', () => {
 
     expect(component.engine.grid[0][0]).toBe('a');
   });
+
 
   it('should delete a character on Backspace', () => {
     // First add a char
@@ -52,6 +58,23 @@ describe('Password2DGridComponent', () => {
 
     expect(component.engine.grid[0][0]).toBe('');
   });
+
+  it('create a grid with maxCharsPerCell = 3 and accumulate input accordingly', () => {
+    component.engine = new Password2DEngine({ rows: 2, cols: 8, maxCharsPerCell: 3 });
+    fixture.detectChanges();
+
+    const cell = fixture.debugElement.query(By.css('.border'));
+    const keys = ['a', 'b', 'c', 'd'];
+    keys.forEach((key) => {
+      const event = new KeyboardEvent('keydown', { key });
+      cell.triggerEventHandler('keydown', event);
+      fixture.detectChanges();
+    });
+
+    // maxCharsPerCell is 3, so only 'a','b','c' should be accepted
+    expect(component.engine.grid[0][0]).toBe('abc');
+  });
+
 
   it('should toggle mask when button is clicked', () => {
     const button = fixture.debugElement.query(By.css('button.text-cyan-600'));
