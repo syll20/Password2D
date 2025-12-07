@@ -138,6 +138,9 @@ function handleInput(e: Event, r: number, c: number) {
     props.onChange?.()
     requestAnimationFrame(syncVisuals)
     focusCell(pos.row, pos.col)
+  }else if (typed.length < current.length) {
+    // Possibly user deleted all — delegate to keyDown handling next frame
+    requestAnimationFrame(syncVisuals);
   }
 }
 
@@ -181,6 +184,9 @@ function handleKeyDown(e: KeyboardEvent, r: number, c: number) {
       focusCell(r, c - 1)
       break
     case 'ArrowRight':
+      e.preventDefault()
+      focusCell(r, c + 1)
+      break
     case 'Tab':
       e.preventDefault();
       if (e.shiftKey) {
