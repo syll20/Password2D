@@ -21,12 +21,12 @@ test('should create grid', () => {
 
 
 test('should render the correct number of cells', () => {
-  render(<Harness />);
+  render(<Harness rows={3} cols={6} />);
   const encoded = screen.getByTestId('encoded').textContent || '';
   // With default 2 rows, 8 cols and maxCharsPerCell=1, the encoded string should be empty
   expect(encoded).toBe('');
   const cells = screen.getAllByRole('textbox');
-  expect(cells.length).toBe(16); // 2 rows * 8 cols
+  expect(cells.length).toBe(18); // 2 rows * 8 cols
 });
 
 

@@ -14,22 +14,6 @@ function Harness(props: any) {
 }
 
 
-test('deletion (Backspace) removes last character', () => {
-  render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
-  const first = screen.getAllByRole('textbox')[0];
-  fireEvent.focus(first);
-
-  fireEvent.keyDown(first, { key: 'a' });
-  fireEvent.keyDown(first, { key: 'b' });
-  // ensure both added
-  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)ab');
-
-  // Backspace should remove 'b'
-  fireEvent.keyDown(first, { key: 'Backspace' });
-  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)a');
-});
-
-
 test('create a grid with maxCharsPerCell = 3 and accumulate input accordingly', () => {
   render(<Harness rows={1} cols={2} maxCharsPerCell={3} masked={false} />);
   const cells = screen.getAllByRole('textbox');
@@ -98,6 +82,28 @@ test('should add a character on input', () => {
 });
 
 
+test('typing more than maxCharsPerCell stops at limit and moves to next cell', () => {
+  render(<Harness rows={1} cols={2} maxCharsPerCell={2} masked={false} />);
+  const cells = screen.getAllByRole('textbox');
+  const first = cells[0];
+  fireEvent.focus(first);
+
+  // Type 3 characters into first cell with max 2
+  const keys = ['x', 'y', 'z'];
+  let current = first as HTMLElement;
+  for (const k of keys) {
+    fireEvent.keyDown(current, { key: k });
+    current = document.activeElement as HTMLElement;
+  }
+
+  const encoded = screen.getByTestId('encoded').textContent || '';
+  // first cell contains only first 2 chars
+  expect(encoded).toContain('(0,0)xy');
+  // overflowed char goes to second cell
+  expect(encoded).toContain('(1,0)z');
+});
+
+
 test('encoding respects coordinateMode xy', () => {
   // Here we set coordinateMode to 'yx' and type in second column, expect (y,x)
   render(<Harness rows={1} cols={2} coordinateMode={'xy'} masked={false} />);
@@ -129,6 +135,22 @@ test('encoding respects coordinateMode yx', () => {
   const encoded = screen.getByTestId('encoded').textContent || '';
   // In yx mode, for row=0 col=1 we expect (0,1)
   expect(encoded).toContain('(0,1)q');
+});
+
+
+test('deletion (Backspace) removes last character', () => {
+  render(<Harness rows={1} cols={1} maxCharsPerCell={3} masked={false} />);
+  const first = screen.getAllByRole('textbox')[0];
+  fireEvent.focus(first);
+
+  fireEvent.keyDown(first, { key: 'a' });
+  fireEvent.keyDown(first, { key: 'b' });
+  // ensure both added
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)ab');
+
+  // Backspace should remove 'b'
+  fireEvent.keyDown(first, { key: 'Backspace' });
+  expect(screen.getByTestId('encoded').textContent).toContain('(0,0)a');
 });
 
 
