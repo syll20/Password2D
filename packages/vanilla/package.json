@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs,iife --dts --global-name Password2D",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "password2d",
@@ -22,10 +23,15 @@
   },
   "devDependencies": {
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/jest": "^29.5.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-jest": "^29.1.0"
   },
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "pretest": "npm --prefix ../core run build"
 }
