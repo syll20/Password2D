@@ -28,7 +28,11 @@ Traditional passwords = 1D:
 `password123`
 
 Password2D = **WHAT + WHERE**:
-`(0,1)pas(1,0)s(2,1)wor(4,2)d1(1,7)23
+(0,1)pas(1,0)sw(2,1)o(4,2)rd1(6,0)23
+
+![3x8 password2d grid (hide)](./docs/images/3x8-password2d-grid-hide.png "3x8 password2d grid (hide)")
+
+![3x8 password2d grid (show)](./docs/images/3x8-password2d-grid-show.png "3x8 password2d grid (show)")
 
 Even with the same number of characters, Password2D drastically increases brute-force resistance because:
 
@@ -44,12 +48,13 @@ For example:
 Grid: 2 x 8
 Max chars per cell: 2
 Total positions: 16
+Characters: 56 [a-Z0-9]
 
 Instead of:
-36^12 combinations  (regular 12-char password)
+56^12 combinations  (regular 12-char password)
 
 You get:
-(16 positions)^12 × (36^12 char combinations)
+(16 positions)^12 × (56^12 char combinations)
 ≈ hundreds of orders of magnitude more entropy
 ```
 
@@ -114,6 +119,7 @@ npm install @password2d/core        # if you want only the engine
 npm install @password2d/react       # React
 npm install @password2d/vue         # Vue 3
 npm install @password2d/angular     # Angular 14+
+npm install @password2d/vanilla
 ```
 
 ---
@@ -126,23 +132,8 @@ More advanced material (architecture, API reference, extension design) lives in:
 
 * `architecture.md`
 * `security.md`
-* `extending.md`
-* `publishing.md`
-* `ui-logic.md`
+* `ui-adapters.md`
 * `engine-internals.md`
-
----
-
-## Contributing
-
-See `/docs/contributing.md`.
-
-Pull requests are welcome — especially:
-
-* Framework adapters
-* Accessibility improvements
-* Mobile UX enhancements
-* Grid visualization themes
 
 ---
 
@@ -156,6 +147,20 @@ Grid → flattened string → backend password hashing (bcrypt/argon/…).
 Full security analysis in `/docs/security.md`.
 
 ---
+
+## Beyond 2D: Toward 3D and Behavioral Passwords
+
+Extending the concept from a 2D grid to a 3D space — using coordinates (x, y, z) instead of (x, y) — could theoretically increase security by adding another dimension of entropy. However, this additional security comes with significant usability challenges.
+
+A 3D password raises practical questions:
+How should a cube be displayed? How does a user intuitively navigate depth? How do we ensure accessibility without overwhelming the user? Unlike a 2D grid, a 3D structure is harder to visualize, harder to input accurately, and more error-prone in everyday use.
+
+That said, 3D interaction already exists in other domains such as video games and virtual environments. In those contexts, users do not “type” passwords — they move, react, and behave naturally. This opens the door to a different idea: **behavioral passwords**.
+
+Instead of asking a user to explicitly enter a secret, a behavioral password relies on what the user does and how they do it — movement patterns, timing, choices, interactions, and habits — to continuously and implicitly identify them. In a true 3D or immersive environment, identity could be inferred from behavior rather than from a static credential.
+
+While Password2D intentionally focuses on a balance between security and usability in today’s web applications, these ideas point toward a future where authentication may become continuous, passive, and deeply tied to user behavior rather than memorized secrets.
+
 
 ## License
 
