@@ -16,17 +16,17 @@
     "prepack": "npm run build:core && npm run build && rm -rf node_modules/@password2d/core && mkdir -p node_modules/@password2d/core && cp ../core/package.json node_modules/@password2d/core/ && cp ../core/tsconfig.json node_modules/@password2d/core/ && cp -r ../core/dist node_modules/@password2d/core/ && cp -r ../core/src node_modules/@password2d/core/"
   },
   "peerDependencies": {
-    "vue": "^3.3.0"
+    "vue": "^3.5.44"
   },
   "dependencies": {
     "@password2d/core": "^1.0.0",
-    "vue": ">=3.3.0"
+    "vue": ">=3.5.44"
   },
   "bundledDependencies": [
     "@password2d/core"
   ],
   "devDependencies": {
-    "vue": "^3.3.0",
+    "vue": "^3.5.44",
     "@types/jest": "^29.5.0",
     "@vue/test-utils": "^2.4.0",
     "@vue/vue3-jest": "^29.2.6",
